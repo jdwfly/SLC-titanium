@@ -1,10 +1,9 @@
 var slc = {};
-Ti.include('db.js', 'ui.js');
-
-var tabs = slc.ui.createApplicationTabGroup();
-tabs.open();
-
+Ti.include('db.js');
+Ti.include('ui.js');
+Ti.include('main.js');
 Ti.API.info('Welcome to SLC for '+Ti.Platform.osname);
+/**
 /////////////////////////////////////////////////////////
 // OLD CODE BELOW
 /////////////////////////////////////////////////////////
@@ -38,7 +37,7 @@ if (Ti.Network.online) {
 
 /** 
  * Create the main application namespace
- */
+ /
 var slc = {
   mainTabGroup: Ti.UI.createTabGroup(),
   scheduleWin: Ti.UI.createWindow({  
@@ -105,3 +104,4 @@ if (Ti.Platform.name == "iPhone OS") {
 }
 // Open the Tab Group
 slc.mainTabGroup.open({transition:Ti.UI.iPhone.AnimationStyle.FLIP_FROM_LEFT});
+*/
