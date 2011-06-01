@@ -1,3 +1,13 @@
+var slc = {};
+Ti.include('db.js', 'ui.js');
+
+var tabs = slc.ui.createApplicationTabGroup();
+tabs.open();
+
+Ti.API.info('Welcome to SLC for '+Ti.Platform.osname);
+/////////////////////////////////////////////////////////
+// OLD CODE BELOW
+/////////////////////////////////////////////////////////
 // Include the Titanium Cache
 // https://github.com/guilhermechapiewski/titanium-cache
 Ti.include('cache.js');
