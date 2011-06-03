@@ -99,8 +99,26 @@
     win.add(scheduleTableView);
     return win;
   };
+  UI.prototype.createIndividualMapWindow = function(e) {
+    var _ref, webView, winMap;
+    if (typeof (_ref = e.rowData.staticpage) !== "undefined" && _ref !== null) {
+      winMap = Ti.UI.createWindow({
+        title: e.rowData.title
+      });
+      webView = Ti.UI.createWebView({
+        url: 'pages/' + e.rowData.staticpage,
+        scalesPageToFit: true
+      });
+      this.tabs.activeTab.open(winMap, {
+        animated: true
+      });
+      winMap.add(webView);
+    }
+    return true;
+  };
   UI.prototype.createMapsWindow = function() {
-    var t_maps, tdata_maps, win;
+    var self, t_maps, tdata_maps, win;
+    self = this;
     win = Ti.UI.createWindow({
       title: 'Maps',
       backgroundColor: '#fff',
@@ -141,20 +159,7 @@
       data: tdata_maps
     });
     t_maps.addEventListener('click', function(e) {
-      var _ref, webView, winMap;
-      if (typeof (_ref = e.rowData.staticpage) !== "undefined" && _ref !== null) {
-        winMap = Ti.UI.createWindow({
-          title: e.rowData.title
-        });
-        webView = Ti.UI.createWebView({
-          url: 'pages/' + e.rowData.staticpage,
-          scalesPageToFit: true
-        });
-        slc.ui.tabs.activeTab.open(winMap, {
-          animated: true
-        });
-        return winMap.add(webView);
-      }
+      return self.createIndividualMapWindow(e);
     });
     win.add(t_maps);
     return win;

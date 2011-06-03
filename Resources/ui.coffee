@@ -51,7 +51,22 @@ class UI
     win.add(scheduleTableView);    
     return win
   
+  
+  createIndividualMapWindow : (e) ->
+    if e.rowData.staticpage?
+      winMap = Ti.UI.createWindow({
+        title: e.rowData.title
+      })
+      webView = Ti.UI.createWebView({
+        url: 'pages/' + e.rowData.staticpage
+        scalesPageToFit: true
+      })
+      @tabs.activeTab.open(winMap, {animated:true})
+      winMap.add(webView)
+    return true
+  
   createMapsWindow : ()->
+    self = this
     win = Ti.UI.createWindow({
       title: 'Maps',
       backgroundColor: '#fff',
@@ -69,16 +84,7 @@ class UI
 
     # create table view event listener
     t_maps.addEventListener('click', (e) ->
-      if e.rowData.staticpage?
-        winMap = Ti.UI.createWindow({
-          title: e.rowData.title
-        })
-        webView = Ti.UI.createWebView({
-          url: 'pages/' + e.rowData.staticpage
-          scalesPageToFit: true
-        })
-        slc.ui.tabs.activeTab.open(winMap,{animated:true})
-        winMap.add(webView)
+      self.createIndividualMapWindow(e)
     )
     
     win.add(t_maps);
