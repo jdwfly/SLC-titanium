@@ -1,5 +1,6 @@
 var slc = {};
 Ti.include('db.js');
+Ti.include('misc.js');
 Ti.include('ui.js');
 Ti.include('main.js');
 Ti.API.info('Welcome to SLC for '+Ti.Platform.osname);
