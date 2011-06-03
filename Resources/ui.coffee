@@ -1,12 +1,60 @@
 # All User Inferface stuff goes here
 class UI
-  createApplicationTabGroup : ()->
-    tabgroup = Ti.UI.createTabGroup()
-    scheduleWin = Ti.UI.createWindow({
+  constructor: () ->
+    @isAndroid = false
+    @isAndroid = true if Ti.Platform.name == 'android'
+  
+  createScheduleWindow : ()->
+    win = Ti.UI.createWindow({
       title: 'Schedule',
       backgroundColor: '#fff',
-      url: 'main_windows/schedule.js'
+      orientationModes: [Ti.UI.PORTRAIT]
     })
+    win.backgroundColor = '#111111' if @isAndroid
+    if @isAndroid
+      activity = Ti.Android.currentActivity
+      activity.onCreateOptionsMenu = (e) ->
+        menu = e.menu
+        menuItem = menu.add({title: 'Refresh'})
+        menuItem.addEventListener('click', (e) ->
+          if Ti.Network.online
+            xhr = Ti.Network.createHTTPClient()
+            xhr.onload = slcUpdateEvents
+            xhr.open("POST", server)
+            xhr.send()
+          else
+            alert("You must be online to refresh the data.")
+          )
+    
+    scheduleData = [
+      {title: "Registration", hasChild:true, test:'../pages/staticpage.js', staticpage:'registration.html'},
+      {title: "Saturday, July 9", hasChild:true, test:'../pages/day.js', date:'July 9, 2011'},
+      {title: "Sunday, July 10", hasChild:true, test:'../pages/day.js', date:'July 10, 2011'},
+      {title: "Monday, July 11", hasChild:true, test:'../pages/day.js', date:'July 11, 2011'},
+      {title: "Tuesday, July 12", hasChild:true, test:'../pages/day.js', date:'July 12, 2011'},
+      {title: "Wednesday, July 13", hasChild:true, test:'../pages/day.js', date:'July 13, 2011'},
+      {title: "Thursday, July 14", hasChild:true, test:'../pages/day.js', date:'July 14, 2011'},
+      {title: "Friday, July 15", hasChild:true, test:'../pages/day.js', date:'July 15, 2011'}]
+    scheduleTableView = Ti.UI.createTableView({data:scheduleData})
+
+    scheduleTableView.addEventListener('click', (e)->
+    	if (e.rowData.test)
+    		scheduleFirstWin = Ti.UI.createWindow({
+    			url:e.rowData.test,
+    			title:e.rowData.title,
+    			staticpage: e.rowData.staticpage,
+    			date: e.rowData.date
+    		})
+    		Ti.UI.currentTab.open(scheduleFirstWin,{animated:true});
+    )
+
+    win.add(scheduleTableView);    
+    return win
+  
+  createApplicationTabGroup : ()->
+    tabgroup = Ti.UI.createTabGroup()
+    scheduleWin = @createScheduleWindow()
+    
     scheduleTab = Ti.UI.createTab({
       icon: 'data/images/83-calendar.png',
       title: 'Schedule',
