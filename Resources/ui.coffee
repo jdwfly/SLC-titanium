@@ -1,8 +1,8 @@
 # All User Inferface stuff goes here
 class UI
   constructor: () ->
-    @isAndroid = false
-    @isAndroid = true if Ti.Platform.name == 'android'
+    @isAndroid = if Ti.Platform.name is 'android' then true else false
+    @tabs = Ti.UI.createTabGroup()
   
   createScheduleWindow : ()->
     win = Ti.UI.createWindow({
@@ -38,7 +38,7 @@ class UI
     scheduleTableView = Ti.UI.createTableView({data:scheduleData})
 
     scheduleTableView.addEventListener('click', (e)->
-    	if (e.rowData.test)
+    	if e.rowData.test?
     		scheduleFirstWin = Ti.UI.createWindow({
     			url:e.rowData.test,
     			title:e.rowData.title,
@@ -51,60 +51,95 @@ class UI
     win.add(scheduleTableView);    
     return win
   
-  createApplicationTabGroup : ()->
-    tabgroup = Ti.UI.createTabGroup()
-    scheduleWin = @createScheduleWindow()
+  createMapsWindow : ()->
+    win = Ti.UI.createWindow({
+      title: 'Maps',
+      backgroundColor: '#fff',
+      orientationModes: [Ti.UI.PORTRAIT]
+    })
+    win.backgroundColor = '#111111' if @isAndroid
+    tdata_maps = [
+      {title: "Auditorium Seating", hasChild:true, test:'../pages/staticpage.js', staticpage: 'seating.html'},
+      {title: "Campus", hasChild:true, test:'../pages/staticpage.js', staticpage: 'campus.html'},
+      {title: "Revels Floor 1", hasChild:true, test:'../pages/staticpage.js', staticpage: 'revels1.html'},
+      {title: "Revels Floor 2", hasChild:true, test:'../pages/staticpage.js', staticpage: 'revels2.html'},
+      {title: "Revels Floor 3", hasChild:true, test:'../pages/staticpage.js', staticpage: 'revels3.html'}
+    ]
+    t_maps = Ti.UI.createTableView({data:tdata_maps})
+
+    # create table view event listener
+    t_maps.addEventListener('click', (e) ->
+      if e.rowData.staticpage?
+        winMap = Ti.UI.createWindow({
+          title: e.rowData.title
+        })
+        webView = Ti.UI.createWebView({
+          url: 'pages/' + e.rowData.staticpage
+          scalesPageToFit: true
+        })
+        slc.ui.tabs.activeTab.open(winMap,{animated:true})
+        winMap.add(webView)
+    )
     
+    win.add(t_maps);
+    return win
+  
+  createApplicationTabGroup : ()->
+    scheduleWin = @createScheduleWindow()
     scheduleTab = Ti.UI.createTab({
       icon: 'data/images/83-calendar.png',
       title: 'Schedule',
       window: scheduleWin
     })
-    mapsWin = Ti.UI.createWindow({  
-      title: 'Maps',
-      backgroundColor: '#fff',
-      url: 'main_windows/maps.js'
-    })
+    
+    mapsWin = @createMapsWindow()
     mapsTab = Ti.UI.createTab({  
       icon: 'data/images/103-map.png',
       title: 'Maps',
       window: mapsWin
     })
+    
     newsWin = Ti.UI.createWindow({  
       title: '@slconference',
       backgroundColor: '#fff',
       url: 'main_windows/news.js'
     })
+    
     newsTab = Ti.UI.createTab({  
       icon: 'data/images/23-bird.png',
       title: 'News',
       window: newsWin
     })
+    
     speakersWin = Ti.UI.createWindow({  
       title: 'Speakers',
       backgroundColor: '#fff',
       url: 'main_windows/speakers.js'
     })
+    
     speakersTab = Ti.UI.createTab({  
       icon: 'data/images/112-group.png',
       title: 'Speakers',
       window: speakersWin
     })
+    
     liveWin = Ti.UI.createWindow({  
       title: 'Live Stream',
       backgroundColor: '#fff',
       url: 'main_windows/livestream.js'
     })
+    
     liveTab = Ti.UI.createTab({  
       icon: 'data/images/69-display.png',
       title: 'Live',
       window: liveWin
     })
-    tabgroup.addTab(scheduleTab)
-    tabgroup.addTab(mapsTab)
-    tabgroup.addTab(newsTab)
-    tabgroup.addTab(speakersTab)
-    tabgroup.addTab(liveTab)
-    return tabgroup
-
+    
+    @tabs.addTab(scheduleTab)
+    @tabs.addTab(mapsTab)
+    @tabs.addTab(newsTab)
+    @tabs.addTab(speakersTab)
+    @tabs.addTab(liveTab)
+    return @tabs
+  
 slc.ui = new UI

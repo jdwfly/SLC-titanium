@@ -1,10 +1,8 @@
 (function() {
   var UI;
   UI = function() {
-    this.isAndroid = false;
-    if (Ti.Platform.name === 'android') {
-      this.isAndroid = true;
-    }
+    this.isAndroid = Ti.Platform.name === 'android' ? true : false;
+    this.tabs = Ti.UI.createTabGroup();
     return this;
   };
   UI.prototype.createScheduleWindow = function() {
@@ -85,8 +83,8 @@
       data: scheduleData
     });
     scheduleTableView.addEventListener('click', function(e) {
-      var scheduleFirstWin;
-      if (e.rowData.test) {
+      var _ref, scheduleFirstWin;
+      if (typeof (_ref = e.rowData.test) !== "undefined" && _ref !== null) {
         scheduleFirstWin = Ti.UI.createWindow({
           url: e.rowData.test,
           title: e.rowData.title,
@@ -101,20 +99,75 @@
     win.add(scheduleTableView);
     return win;
   };
+  UI.prototype.createMapsWindow = function() {
+    var t_maps, tdata_maps, win;
+    win = Ti.UI.createWindow({
+      title: 'Maps',
+      backgroundColor: '#fff',
+      orientationModes: [Ti.UI.PORTRAIT]
+    });
+    if (this.isAndroid) {
+      win.backgroundColor = '#111111';
+    }
+    tdata_maps = [
+      {
+        title: "Auditorium Seating",
+        hasChild: true,
+        test: '../pages/staticpage.js',
+        staticpage: 'seating.html'
+      }, {
+        title: "Campus",
+        hasChild: true,
+        test: '../pages/staticpage.js',
+        staticpage: 'campus.html'
+      }, {
+        title: "Revels Floor 1",
+        hasChild: true,
+        test: '../pages/staticpage.js',
+        staticpage: 'revels1.html'
+      }, {
+        title: "Revels Floor 2",
+        hasChild: true,
+        test: '../pages/staticpage.js',
+        staticpage: 'revels2.html'
+      }, {
+        title: "Revels Floor 3",
+        hasChild: true,
+        test: '../pages/staticpage.js',
+        staticpage: 'revels3.html'
+      }
+    ];
+    t_maps = Ti.UI.createTableView({
+      data: tdata_maps
+    });
+    t_maps.addEventListener('click', function(e) {
+      var _ref, webView, winMap;
+      if (typeof (_ref = e.rowData.staticpage) !== "undefined" && _ref !== null) {
+        winMap = Ti.UI.createWindow({
+          title: e.rowData.title
+        });
+        webView = Ti.UI.createWebView({
+          url: 'pages/' + e.rowData.staticpage,
+          scalesPageToFit: true
+        });
+        slc.ui.tabs.activeTab.open(winMap, {
+          animated: true
+        });
+        return winMap.add(webView);
+      }
+    });
+    win.add(t_maps);
+    return win;
+  };
   UI.prototype.createApplicationTabGroup = function() {
-    var liveTab, liveWin, mapsTab, mapsWin, newsTab, newsWin, scheduleTab, scheduleWin, speakersTab, speakersWin, tabgroup;
-    tabgroup = Ti.UI.createTabGroup();
+    var liveTab, liveWin, mapsTab, mapsWin, newsTab, newsWin, scheduleTab, scheduleWin, speakersTab, speakersWin;
     scheduleWin = this.createScheduleWindow();
     scheduleTab = Ti.UI.createTab({
       icon: 'data/images/83-calendar.png',
       title: 'Schedule',
       window: scheduleWin
     });
-    mapsWin = Ti.UI.createWindow({
-      title: 'Maps',
-      backgroundColor: '#fff',
-      url: 'main_windows/maps.js'
-    });
+    mapsWin = this.createMapsWindow();
     mapsTab = Ti.UI.createTab({
       icon: 'data/images/103-map.png',
       title: 'Maps',
@@ -150,12 +203,12 @@
       title: 'Live',
       window: liveWin
     });
-    tabgroup.addTab(scheduleTab);
-    tabgroup.addTab(mapsTab);
-    tabgroup.addTab(newsTab);
-    tabgroup.addTab(speakersTab);
-    tabgroup.addTab(liveTab);
-    return tabgroup;
+    this.tabs.addTab(scheduleTab);
+    this.tabs.addTab(mapsTab);
+    this.tabs.addTab(newsTab);
+    this.tabs.addTab(speakersTab);
+    this.tabs.addTab(liveTab);
+    return this.tabs;
   };
   slc.ui = new UI();
 }).call(this);
